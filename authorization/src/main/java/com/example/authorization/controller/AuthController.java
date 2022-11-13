@@ -1,5 +1,6 @@
 package com.example.authorization.controller;
 
+import com.example.authorization.dto.ErrorMessage;
 import com.example.authorization.dto.LoginRequest;
 import com.example.authorization.model.User;
 import com.example.authorization.repository.UserRepository;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/auth")
+@CrossOrigin
 public class AuthController {
 
 
@@ -58,17 +60,17 @@ public class AuthController {
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Неверный логин или пароль");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage("Неверный логин или пароль"));
         }
     }
 
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody User user) {
         if (userRepository.existsByUsername(user.getUsername()))
-            return ResponseEntity.badRequest().body("Пользователь с таким логином уже существует");
+            return ResponseEntity.badRequest().body(new ErrorMessage("Пользователь с таким логином уже существует"));
 
         if (userRepository.existsByEmail(user.getEmail()))
-            return ResponseEntity.badRequest().body("Пользователь с таким email уже существует");
+            return ResponseEntity.badRequest().body(new ErrorMessage("Пользователь с таким email уже существует"));
 
         userService.register(user);
         return ResponseEntity.ok("Регистрация прошла успешно");
