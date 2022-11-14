@@ -1,6 +1,6 @@
 package com.example.authorization.controller;
 
-import com.example.authorization.dto.ErrorMessage;
+import com.example.authorization.error.ErrorDescription;
 import com.example.authorization.dto.LoginRequest;
 import com.example.authorization.model.User;
 import com.example.authorization.repository.UserRepository;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -60,17 +59,17 @@ public class AuthController {
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage("Неверный логин или пароль"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorDescription.WRONG_LOGIN_OR_PASSWORD.createException());
         }
     }
 
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody User user) {
         if (userRepository.existsByUsername(user.getUsername()))
-            return ResponseEntity.badRequest().body(new ErrorMessage("Пользователь с таким логином уже существует"));
+            return ResponseEntity.badRequest().body(ErrorDescription.LOGIN_ALREADY_EXISTS.createException());
 
         if (userRepository.existsByEmail(user.getEmail()))
-            return ResponseEntity.badRequest().body(new ErrorMessage("Пользователь с таким email уже существует"));
+            return ResponseEntity.badRequest().body(ErrorDescription.EMAIL_ALREADY_EXISTS.createException());
 
         userService.register(user);
         return ResponseEntity.ok("Регистрация прошла успешно");
