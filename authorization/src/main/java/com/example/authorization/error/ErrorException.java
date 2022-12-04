@@ -1,9 +1,10 @@
 package com.example.authorization.error;
 
+import com.example.authorization.dto.Response;
 import lombok.Getter;
 
 @Getter
-public class ErrorException {
+public class ErrorException implements Response {
 
     private final String code;
 

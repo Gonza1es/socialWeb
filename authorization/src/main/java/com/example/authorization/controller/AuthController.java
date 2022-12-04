@@ -1,5 +1,8 @@
 package com.example.authorization.controller;
 
+import com.example.authorization.dto.Response;
+import com.example.authorization.dto.ResponseIsOK;
+import com.example.authorization.dto.ResponseMessage;
 import com.example.authorization.error.ErrorDescription;
 import com.example.authorization.dto.LoginRequest;
 import com.example.authorization.model.User;
@@ -42,7 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public Response login(@RequestBody LoginRequest loginRequest) {
         try {
             String username = loginRequest.getUsername();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, loginRequest.getPassword()));
@@ -53,26 +56,22 @@ public class AuthController {
             }
             String token = jwtTokenProvider.createToken(username, user.getRoles());
 
-            Map<Object, Object> response = new HashMap<>();
-            response.put("username", username);
-            response.put("token", token);
-
-            return ResponseEntity.ok(response);
+            return new ResponseIsOK(username, token);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorDescription.WRONG_LOGIN_OR_PASSWORD.createException());
+            return ErrorDescription.WRONG_LOGIN_OR_PASSWORD.createException();
         }
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody User user) {
+    public Response registration(@RequestBody User user) {
         if (userRepository.existsByUsername(user.getUsername()))
-            return ResponseEntity.badRequest().body(ErrorDescription.LOGIN_ALREADY_EXISTS.createException());
+            return ErrorDescription.LOGIN_ALREADY_EXISTS.createException();
 
         if (userRepository.existsByEmail(user.getEmail()))
-            return ResponseEntity.badRequest().body(ErrorDescription.EMAIL_ALREADY_EXISTS.createException());
+            return ErrorDescription.EMAIL_ALREADY_EXISTS.createException();
 
         userService.register(user);
-        return ResponseEntity.ok("Регистрация прошла успешно");
+        return new ResponseMessage("Регистрация прошла успешно");
 
     }
 

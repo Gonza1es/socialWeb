@@ -1,5 +1,6 @@
 package com.example.authorization.error;
 
+import com.example.authorization.dto.Response;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 @Getter
