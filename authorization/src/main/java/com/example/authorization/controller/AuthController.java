@@ -1,7 +1,6 @@
 package com.example.authorization.controller;
 
 import com.example.authorization.dto.Response;
-import com.example.authorization.dto.ResponseIsOK;
 import com.example.authorization.dto.ResponseMessage;
 import com.example.authorization.error.ErrorDescription;
 import com.example.authorization.dto.LoginRequest;
@@ -10,16 +9,11 @@ import com.example.authorization.repository.UserRepository;
 import com.example.authorization.security.jwt.JwtTokenProvider;
 import com.example.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/auth")
@@ -49,14 +43,14 @@ public class AuthController {
         try {
             String username = loginRequest.getUsername();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, loginRequest.getPassword()));
-            User user = userService.findByUsername(username);
+            User user = userService.getUserByUsername(username);
 
             if (user == null) {
                 throw new UsernameNotFoundException("Пользователь не найден");
             }
             String token = jwtTokenProvider.createToken(username, user.getRoles());
 
-            return new ResponseIsOK(username, token);
+            return new ResponseMessage(token, user.getIsFirstVisit());
         } catch (AuthenticationException e) {
             return ErrorDescription.WRONG_LOGIN_OR_PASSWORD.createException();
         }
@@ -71,8 +65,7 @@ public class AuthController {
             return ErrorDescription.EMAIL_ALREADY_EXISTS.createException();
 
         userService.register(user);
-        return new ResponseMessage("Регистрация прошла успешно");
-
+        return null;
     }
 
 }

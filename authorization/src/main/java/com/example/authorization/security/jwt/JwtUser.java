@@ -13,17 +13,21 @@ public class JwtUser implements UserDetails {
     private String password;
     private String email;
 
+    private Boolean isFirstVisit;
+
     private final Collection<? extends GrantedAuthority> authorities;
 
     public JwtUser(Long id,
                    String username,
                    String password,
                    String email,
+                   Boolean isFirstVisit,
                    Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.isFirstVisit = isFirstVisit;
         this.authorities = authorities;
     }
 
@@ -34,6 +38,10 @@ public class JwtUser implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public Boolean getFirstVisit() {
+        return isFirstVisit;
     }
 
     @Override

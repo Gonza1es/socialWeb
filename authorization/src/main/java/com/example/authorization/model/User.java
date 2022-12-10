@@ -3,9 +3,7 @@ package com.example.authorization.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users",
@@ -24,6 +22,7 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private Boolean isFirstVisit;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",

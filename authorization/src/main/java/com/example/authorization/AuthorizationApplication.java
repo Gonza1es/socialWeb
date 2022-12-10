@@ -21,7 +21,7 @@ public class AuthorizationApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry
-                        .addMapping("/api/content/**")
+                        .addMapping("/api/**")
                         .allowedMethods("OPTIONS", "GET", "POST")
                         .allowedHeaders("Authorization");
             }
